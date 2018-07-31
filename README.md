@@ -6,4 +6,4 @@ Drive through randomly generated night cityscape
 * [Gradient](https://p5js.org/examples/color-linear-gradient.html)
 
 ## Assets source
-* **Car sprite**(https://www.vecteezy.com/vector-art/140757-carros-icons-vector)
+* [Car sprite](https://www.vecteezy.com/vector-art/140757-carros-icons-vector)
