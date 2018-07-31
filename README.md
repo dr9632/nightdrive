@@ -1,5 +1,6 @@
 # Night Drive
 Drive through randomly generated night cityscape
+![night drive preview](https://i.imgur.com/L28Qi4Q.png)
 
 ## Control
 * LEFT CLICK: Turn on/off headlight
