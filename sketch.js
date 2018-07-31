@@ -32,6 +32,12 @@ var buildEdge = 12,
 var car, carImg;
 var track;
 
+// Weather check
+var isRaining = false;
+var rainAmt, rainImg;
+var rainParticles = [];
+var windX, windY;
+
 function preload() {
 	// Car image source: https://www.vecteezy.com/vector-art/140757-carros-icons-vector
 	carImg = loadImage('assets/img/car.png');
@@ -78,6 +84,19 @@ function setup() {
 
 	// Car setting
 	car = new carObj();
+
+	// Raining chance is 30%
+	rainAmt = frandom(0, 1000);
+	if (rainAmt > 700) {
+		isRaining = true;
+		rainSet();
+
+		windX = frandom(0, 5);
+		windY = frandom(1, 10);
+
+		for (let i = 0; i < rainAmt; i++)
+			rainParticles[i] = new rainParticle();
+	}
 }
 
 function draw() {
@@ -133,6 +152,21 @@ function draw() {
 		car.moving = true;
 	else
 		car.moving = false;
+
+	// If raining, draw rain
+	if (isRaining) {
+		for (let i = 0; i < rainParticles.length; i++) {
+			rainParticles[i].draw();
+
+			if (!rainParticles[i].isVisible())
+				rainParticles.splice(i, 1);
+		}
+
+		if (rainParticles.length < rainAmt) {
+			for (let i = rainParticles.length; i < rainAmt; i++)
+				rainParticles[i] = new rainParticle();
+		}
+	}
 }
 
 function windowResized() {
@@ -229,6 +263,33 @@ starObj.prototype.draw = function() {
 	fill(250, 250, 225, map(sin(this.blinkSin), -1, 1, 0, 255));
 	ellipse(this.pX, this.pY, this.r);	// Draw star
 	this.blinkSin += PI / 90;
+}
+
+function rainSet() {
+	// Create image for rain (width 1px, height 3px)
+	rainImg = createImage(1, 3);
+	rainImg.loadPixels();
+	
+	// Fill in the image data
+	for (let i = 0; i < rainImg.height; i++)
+		rainImg.set(0, i, color(220, 200, 250, 120));
+	rainImg.updatePixels();
+}
+
+var rainParticle = function() {
+	this.pX = frandom(20, width-20);
+	this.pY = frandom(0, basePos);
+}
+
+rainParticle.prototype.draw = function() {
+	image(rainImg, this.pX, this.pY);
+
+	this.pX += windX;
+	this.pY += windY;
+}
+
+rainParticle.prototype.isVisible = function() {
+	return this.pX > 0 && this.pX < width+12 && this.pY > 0 && this.pY < height+12;
 }
 
 var winObj = function(x, y, alignNum) {
@@ -370,7 +431,7 @@ var carObj = function() {
 	this.pY = basePos - 31;
 	this.ySin = 0;
 
-	this.headlight = true;
+	this.headlight = false;
 	this.moving = false;
 	this.auto = false;
 }
