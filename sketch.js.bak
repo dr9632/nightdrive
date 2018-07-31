@@ -1,9 +1,6 @@
 // Gradient
 // source: https://p5js.org/examples/color-linear-gradient.html
 
-// RanSeed for current session
-var seed;
-
 // Color settings
 var c1, c2;
 var r, g, b;
@@ -33,18 +30,23 @@ var buildEdge = 12,
 
 // Car
 var car, carImg;
+var track;
 
 function preload() {
 	// Car image source: https://www.vecteezy.com/vector-art/140757-carros-icons-vector
 	carImg = loadImage('assets/img/car.png');
+	track = loadSound('assets/audio/01.mp3');
 }
 
 function setup() {
 	// Setup default canvas to fill up entire window & black
 	createCanvas(window.innerWidth, window.innerHeight-10);
 	
-	// Set seed for current session
-	// seed = random(1000);
+	// Play track
+	//track.play();
+	track.setLoop(true);
+	track.setVolume(0.3);
+	track.playMode('restart');
 
 	// Generate random color (base)
 	r = frandom(20, 70);
@@ -125,6 +127,12 @@ function draw() {
 	// Low ground
 	fill(14,12,18);
 	rect(0, basePos, width, 50);
+
+	// Check user input
+	if (keyIsDown(RIGHT_ARROW) || car.auto)
+		car.moving = true;
+	else
+		car.moving = false;
 }
 
 function windowResized() {
@@ -136,6 +144,31 @@ function windowResized() {
 // Turn on / off headlight when mouse is clicked
 function mouseClicked() {
 	car.headlight = !car.headlight;
+}
+
+// Turn on / off auto drive mode (SPACEBAR)
+function keyTyped() {
+	if (key === ' ')
+		car.auto = !car.auto;
+}
+
+function keyPressed() {
+	// Turn on / off music
+	if (keyCode === SHIFT) {
+		if (track.isPlaying())
+			track.stop();
+		else
+			track.play();
+	}
+	// Reroll color scheme & get new gradient values
+	if (keyCode === ENTER){
+		r = frandom(20, 70);
+		g = frandom(0, 25);
+		b = frandom(30, 100);
+		
+		c1 = color(lowCap(r, 30), lowCap(g, 30), b-30);
+		c2 = color(r+frandom(30, 70), g+frandom(10,30), b+frandom(30,70));
+	}
 }
 
 function lowCap(num, sub) {
@@ -207,9 +240,7 @@ var winObj = function(x, y, alignNum) {
 	this.lightOn = frandom(0, 3);	// 0: false, else is true
 	if (this.lightOn > 0) {
 		this.isFlicker = frandom(0, 4);	// 0, 1: doesn't flick, 2: gentle flick, 3: random flick
-		if (this.isFlicker == 2) 
-			this.flickSin = PI;
-		else if (this.isFlicker == 3) 
+		if (this.isFlicker > 1)
 			this.flickSin = random(0, PI);
 	}
 }
@@ -341,6 +372,7 @@ var carObj = function() {
 
 	this.headlight = true;
 	this.moving = false;
+	this.auto = false;
 }
 
 carObj.prototype.draw = function (x, y) {
