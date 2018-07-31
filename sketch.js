@@ -49,7 +49,7 @@ function setup() {
 	createCanvas(window.innerWidth, window.innerHeight-10);
 	
 	// Play track
-	//track.play();
+	track.play();
 	track.setLoop(true);
 	track.setVolume(0.3);
 	track.playMode('restart');
@@ -91,7 +91,7 @@ function setup() {
 		isRaining = true;
 		rainSet();
 
-		windX = frandom(0, 5);
+		windX = frandom(0, 3);
 		windY = frandom(1, 10);
 
 		for (let i = 0; i < rainAmt; i++)
